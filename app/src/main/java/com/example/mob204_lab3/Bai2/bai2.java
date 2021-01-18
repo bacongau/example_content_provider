@@ -30,6 +30,7 @@ public class bai2 extends AppCompatActivity {
     ArrayList<String> filePath = new ArrayList<>();
     List<Bitmap> list2 = new ArrayList<Bitmap>();
     ImageOnListviewAdapter adapter;
+    int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,14 +43,23 @@ public class bai2 extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                list2.clear();
 
+                // xin quyen truy cap storage
                 requestPermission();
 
+                // lay duong dan cua tat ca cac anh
                 getImageFilePath();
 
+                // chuyen duong dan sang bitmap
                 setImage();
-                listView.setAdapter(adapter);
+
+                // vi khi click button no se setAdapter lien tuc
+                if (count == 0){
+                    listView.setAdapter(adapter);   // them dieu kien de chi setAdapter 1 lan tranh trung du lieu
+                    count++;
+                }else {
+
+                }
             }
         });
     }
@@ -60,7 +70,6 @@ public class bai2 extends AppCompatActivity {
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             list2.add(myBitmap);
         }
-
 
 
 
@@ -75,18 +84,14 @@ public class bai2 extends AppCompatActivity {
 
 
     private void getImageFilePath() {
-        String []anh = {
-                MediaStore.MediaColumns.DISPLAY_NAME,
-                MediaStore.MediaColumns.DATE_ADDED,
-                MediaStore.MediaColumns.MIME_TYPE
-        };
-
+        // tao con tro doc duong dan trong bo nho ngoai
         CursorLoader cursorLoader = new CursorLoader(
                 this, MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 null,
                 null,
                 null,
                 null);
+
 
         Cursor cursor = cursorLoader.loadInBackground();
         cursor.moveToFirst();
@@ -99,7 +104,13 @@ public class bai2 extends AppCompatActivity {
             cursor.moveToNext();
         }
 
-        Toast.makeText(this, filePath.get(0) + "\n-------\n" + filePath.get(1) + "\n-------\n" + filePath.get(2), Toast.LENGTH_SHORT).show();
+        String a = "";
+        for (int i = 0;i<filePath.size();i++){
+            a+= filePath.get(i);
+            a+= "\n---------\n";
+        }
+        Toast.makeText(this, a, Toast.LENGTH_SHORT).show();
+
         cursor.close();
     }
 
