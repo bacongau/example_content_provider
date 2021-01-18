@@ -10,16 +10,10 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Browser;
 import android.provider.MediaStore;
-import android.service.media.MediaBrowserService;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,44 +28,53 @@ public class bai2 extends AppCompatActivity {
     ListView listView;
     int REQUEST_READ_EXTERNAL_STORAGE = 456;
     ArrayList<String> filePath = new ArrayList<>();
-
+    List<Bitmap> list2 = new ArrayList<Bitmap>();
+    ImageOnListviewAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bai2);
 
         button = findViewById(R.id.button_bai2);
-  //      listView = findViewById(R.id.listview_bai2);
+        listView = findViewById(R.id.listview_image);
+        adapter = new ImageOnListviewAdapter(this,R.layout.item_image,list2);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                list2.clear();
 
                 requestPermission();
 
-                loadImage();
+                getImageFilePath();
 
                 setImage();
+                listView.setAdapter(adapter);
             }
         });
     }
 
     private void setImage() {
-        File imgFile = new  File(filePath.get(0) + "");
-
-        if(imgFile.exists()){
-
+        for (int i = 0; i < filePath.size(); i++){
+            File imgFile = new  File(filePath.get(i) + "");
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-
-            ImageView myImage = (ImageView) findViewById(R.id.imageView);
-
-            myImage.setImageBitmap(myBitmap);
-
+            list2.add(myBitmap);
         }
+
+
+
+
+//        File imgFile = new  File(filePath.get(0) + "");
+//
+//        if(imgFile.exists()){
+//            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+//            ImageView myImage = (ImageView) findViewById(R.id.imageView);
+//            myImage.setImageBitmap(myBitmap);
+//        }
     }
 
 
-    private void loadImage() {
+    private void getImageFilePath() {
         String []anh = {
                 MediaStore.MediaColumns.DISPLAY_NAME,
                 MediaStore.MediaColumns.DATE_ADDED,
@@ -89,15 +92,14 @@ public class bai2 extends AppCompatActivity {
         cursor.moveToFirst();
         String s = "";
         while (!cursor.isAfterLast()){
-            s = cursor.getString(1);
-//            for (int i = 0;i<cursor.getColumnCount();i++){
-//                s+= cursor.getString(i) + " - " ;
-//            }
+            for (int i = 0;i<cursor.getColumnCount();i++){
+                s = cursor.getString(1);
+            }
             filePath.add(s);
             cursor.moveToNext();
         }
 
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, filePath.get(0) + "\n-------\n" + filePath.get(1) + "\n-------\n" + filePath.get(2), Toast.LENGTH_SHORT).show();
         cursor.close();
     }
 
